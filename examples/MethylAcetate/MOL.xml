@@ -1,0 +1,98 @@
+<?xml version="1.0" ?>
+<ForceField>
+	<Residues>
+		<Residue name="MOL">
+			<Atom name="C1" type="C1" />
+			<Atom name="C2" type="C2" />
+			<Atom name="O1" type="O1" />
+			<Atom name="O2" type="O2" />
+			<Atom name="C3" type="C3" />
+			<Atom name="H1" type="H1" />
+			<Atom name="H2" type="H2" />
+			<Atom name="H3" type="H3" />
+			<Atom name="H4" type="H4" />
+			<Atom name="H5" type="H5" />
+			<Atom name="H6" type="H6" />
+			<Bond atomName1="C1" atomName2="C2"/>
+			<Bond atomName1="C1" atomName2="H1"/>
+			<Bond atomName1="C1" atomName2="H2"/>
+			<Bond atomName1="C1" atomName2="H3"/>
+			<Bond atomName1="C2" atomName2="O1"/>
+			<Bond atomName1="C2" atomName2="O2"/>
+			<Bond atomName1="O2" atomName2="C3"/>
+			<Bond atomName1="C3" atomName2="H4"/>
+			<Bond atomName1="C3" atomName2="H5"/>
+			<Bond atomName1="C3" atomName2="H6"/>
+		</Residue>
+	</Residues>
+	<AtomTypes>
+		<Type element="C" name="C1" class="c3" mass="12.010"/>
+		<Type element="C" name="C2" class="c" mass="12.010"/>
+		<Type element="O" name="O1" class="o" mass="16.000"/>
+		<Type element="O" name="O2" class="os" mass="16.000"/>
+		<Type element="C" name="C3" class="c3" mass="12.010"/>
+		<Type element="H" name="H1" class="hc" mass="1.008"/>
+		<Type element="H" name="H2" class="hc" mass="1.008"/>
+		<Type element="H" name="H3" class="hc" mass="1.008"/>
+		<Type element="H" name="H4" class="h1" mass="1.008"/>
+		<Type element="H" name="H5" class="h1" mass="1.008"/>
+		<Type element="H" name="H6" class="h1" mass="1.008"/>
+	</AtomTypes>
+	<HarmonicBondForce>
+		<Bond type1="C1" type2="C2" length="0.1524000000" k="203510.0000000000"/>
+		<Bond type1="C1" type2="H1" length="0.1097000000" k="314550.0000000001"/>
+		<Bond type1="C1" type2="H2" length="0.1097000000" k="314550.0000000001"/>
+		<Bond type1="C1" type2="H3" length="0.1097000000" k="314550.0000000001"/>
+		<Bond type1="C2" type2="O1" length="0.1218000000" k="546100.0000000001"/>
+		<Bond type1="C2" type2="O2" length="0.1358000000" k="312040.0000000000"/>
+		<Bond type1="O2" type2="C3" length="0.1432000000" k="238320.0000000000"/>
+		<Bond type1="C3" type2="H4" length="0.1097000000" k="314550.0000000001"/>
+		<Bond type1="C3" type2="H5" length="0.1097000000" k="314550.0000000001"/>
+		<Bond type1="C3" type2="H6" length="0.1097000000" k="314550.0000000001"/>
+	</HarmonicBondForce>
+	<HarmonicAngleForce>
+		<Angle type1="C1" type2="C2" type3="O1" angle="2.1502456385" k="707.9300000000"/>
+		<Angle type1="C1" type2="C2" type3="O2" angle="1.9324285478" k="723.0000000000"/>
+		<Angle type1="C2" type2="C1" type3="H1" angle="1.8983946274" k="396.6400000000"/>
+		<Angle type1="C2" type2="C1" type3="H2" angle="1.8983946274" k="396.6400000000"/>
+		<Angle type1="C2" type2="C1" type3="H3" angle="1.8983946274" k="396.6400000000"/>
+		<Angle type1="C2" type2="O2" type3="C3" angle="2.0242328665" k="559.8200000000"/>
+		<Angle type1="O1" type2="C2" type3="O2" angle="2.1511183031" k="960.6500000000"/>
+		<Angle type1="O2" type2="C3" type3="H4" angle="1.9160224528" k="522.1600000000"/>
+		<Angle type1="O2" type2="C3" type3="H5" angle="1.9160224528" k="522.1600000000"/>
+		<Angle type1="O2" type2="C3" type3="H6" angle="1.9160224528" k="522.1600000000"/>
+		<Angle type1="H1" type2="C1" type3="H2" angle="1.8776252093" k="326.3500000000"/>
+		<Angle type1="H1" type2="C1" type3="H3" angle="1.8776252093" k="326.3500000000"/>
+		<Angle type1="H2" type2="C1" type3="H3" angle="1.8776252093" k="326.3500000000"/>
+		<Angle type1="H4" type2="C3" type3="H5" angle="1.8929841067" k="324.6800000000"/>
+		<Angle type1="H4" type2="C3" type3="H6" angle="1.8929841067" k="324.6800000000"/>
+		<Angle type1="H5" type2="C3" type3="H6" angle="1.8929841067" k="324.6800000000"/>
+	</HarmonicAngleForce>
+	<PeriodicTorsionForce ordering="amber">
+		<Proper type1="C1" type2="C2" type3="O2" type4="C3" periodicity1="3" phase1="0.0000000000" k1="3.0543200000" periodicity2="1" phase2="3.1415926536" k2="6.6107200000" periodicity3="2" phase3="3.1415926536" k3="13.3051200000"/>
+		<Proper type1="C2" type2="O2" type3="C3" type4="H4" periodicity1="3" phase1="0.0000000000" k1="1.6038700000"/>
+		<Proper type1="C2" type2="O2" type3="C3" type4="H5" periodicity1="3" phase1="0.0000000000" k1="1.6038700000"/>
+		<Proper type1="C2" type2="O2" type3="C3" type4="H6" periodicity1="3" phase1="0.0000000000" k1="1.6038700000"/>
+		<Proper type1="O1" type2="C2" type3="O2" type4="C3" periodicity1="1" phase1="3.1415926536" k1="5.8576000000" periodicity2="2" phase2="3.1415926536" k2="11.2968000000"/>
+		<Proper type1="H1" type2="C1" type3="C2" type4="O1" periodicity1="1" phase1="0.0000000000" k1="3.4727200000" periodicity2="3" phase2="3.1415926536" k2="0.1673600000"/>
+		<Proper type1="H1" type2="C1" type3="C2" type4="O2" periodicity1="2" phase1="3.1415926536" k1="0.0000000000"/>
+		<Proper type1="H2" type2="C1" type3="C2" type4="O1" periodicity1="1" phase1="0.0000000000" k1="3.4727200000" periodicity2="3" phase2="3.1415926536" k2="0.1673600000"/>
+		<Proper type1="H2" type2="C1" type3="C2" type4="O2" periodicity1="2" phase1="3.1415926536" k1="0.0000000000"/>
+		<Proper type1="H3" type2="C1" type3="C2" type4="O1" periodicity1="1" phase1="0.0000000000" k1="3.4727200000" periodicity2="3" phase2="3.1415926536" k2="0.1673600000"/>
+		<Proper type1="H3" type2="C1" type3="C2" type4="O2" periodicity1="2" phase1="3.1415926536" k1="0.0000000000"/>
+		<Improper type1="C2" type2="C1" type3="O1" type4="O2" periodicity1="2" phase1="3.1415926536" k1="4.6024000000"/>
+	</PeriodicTorsionForce>
+	<NonbondedForce coulomb14scale="0.83333" lj14scale="0.50000">
+		<Atom type="C1" sigma="0.3397710000" epsilon="0.4510350000" charge="-0.2177280000"/>
+		<Atom type="C2" sigma="0.3315210000" epsilon="0.4133790000" charge="0.3002720000"/>
+		<Atom type="O1" sigma="0.3048120000" epsilon="0.6121190000" charge="-0.3537280000"/>
+		<Atom type="O2" sigma="0.3156100000" epsilon="0.3037580000" charge="-0.2807280000"/>
+		<Atom type="C3" sigma="0.3397710000" epsilon="0.4510350000" charge="-0.0637280000"/>
+		<Atom type="H1" sigma="0.2600180000" epsilon="0.0870272000" charge="0.1152720000"/>
+		<Atom type="H2" sigma="0.2600180000" epsilon="0.0870272000" charge="0.1152720000"/>
+		<Atom type="H3" sigma="0.2600180000" epsilon="0.0870272000" charge="0.1152720000"/>
+		<Atom type="H4" sigma="0.2422000000" epsilon="0.0870272000" charge="0.0899420000"/>
+		<Atom type="H5" sigma="0.2422000000" epsilon="0.0870272000" charge="0.0899420000"/>
+		<Atom type="H6" sigma="0.2422000000" epsilon="0.0870272000" charge="0.0899420000"/>
+	</NonbondedForce>
+</ForceField>

@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<Residues>
+	<Residue name="MOL">
+		<Bond from="C1" to="C2"/>
+		<Bond from="C1" to="H1"/>
+		<Bond from="C1" to="H2"/>
+		<Bond from="C1" to="H3"/>
+		<Bond from="C2" to="O1"/>
+		<Bond from="C2" to="O2"/>
+		<Bond from="O2" to="C3"/>
+		<Bond from="C3" to="H4"/>
+		<Bond from="C3" to="H5"/>
+		<Bond from="C3" to="H6"/>
+	</Residue>
+</Residues>
