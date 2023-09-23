@@ -46,6 +46,45 @@ def split_top(top: os.PathLike, atp: os.PathLike, itp: os.PathLike, posre: os.Pa
                 f.write(f"{i+1:>6}     1  1000  1000 1000\n")
 
 
+def add_posre(ori_top: os.PathLike, new_top: os.PathLike):
+    with open(ori_top) as f:
+        topstr = f.read()
+    
+    strs = topstr.split("[ moleculetype ]")
+    if "[ position_restraints ]" not in strs[1]:
+        atoms = []
+        read_atoms = False
+        for line in strs[1].split('\n'):
+            if line.startswith("[ atoms ]"):
+                read_atoms = True
+            elif read_atoms and line.startswith('['):
+                read_atoms = False
+            if read_atoms and (not line.startswith(';')) and (not line.startswith('[ atoms ]')) and (line.strip()):
+                atoms.append(line.split()[4])
+        posre = "\n[ position_restraints ]; atom  type    fx    fy    fz\n"
+        for i in range(len(atoms)):
+            if not atoms[i].startswith('H'):
+                posre += f"{i+1:>6}     1  1000  1000 1000\n"
+        strs[1] += f"{posre}\n"
+    
+    with open(new_top, 'w') as f:
+        f.write('[ moleculetype ]'.join(strs))
+
+
+def remove_posre(ori_top: os.PathLike, new_top: os.PathLike):
+    newf = open(new_top, 'w')
+    read_posre = False
+    with open(ori_top, 'r') as f:
+        for line in f:
+            if line.startswith("[ position_restraints ]"):
+                read_posre = True
+            elif read_posre and line.startswith('['):
+                read_posre = False
+            if not read_posre:
+                newf.write(line)
+    newf.close()
+
+
 def run_command(cmd: List[str], **kwargs):
     cmd = [str(x) for x in cmd]
     sub = subprocess.Popen(
@@ -62,7 +101,7 @@ def run_command(cmd: List[str], **kwargs):
     return return_code, out, err
 
 
-def setup(wdir: os.PathLike, top: os.PathLike, gro: os.PathLike, config: os.PathLike):
+def setup(wdir: os.PathLike, top: os.PathLike, gro: os.PathLike, config: os.PathLike, processed: bool = False):
     from gromacs.fileformats.mdp import MDP
 
     with open(config, 'r') as f:
@@ -86,22 +125,26 @@ def setup(wdir: os.PathLike, top: os.PathLike, gro: os.PathLike, config: os.Path
     wdir.mkdir(exist_ok=True, parents=True)
 
     # prepare topology & gro
-    split_top(top, wdir / "MOL.atp", wdir / "MOL.itp", wdir / "posre_MOL.itp")
-    shutil.copyfile(Path(__file__).parent / "template.top", wdir / "topol.top")
-    shutil.copyfile(gro, wdir / "MOL.gro")
+    if not processed:
+        split_top(top, wdir / "MOL.atp", wdir / "MOL.itp", wdir / "posre_MOL.itp")
+        shutil.copyfile(Path(__file__).parent / "template.top", wdir / "topol.top")
+        shutil.copyfile(gro, wdir / "MOL.gro")
 
-    if shutil.which("gmx_mpi") is not None:
-        gmx = "gmx_mpi"
-    elif shutil.which("gmx") is not None:
-        gmx = "gmx"
+        if shutil.which("gmx_mpi") is not None:
+            gmx = "gmx_mpi"
+        elif shutil.which("gmx") is not None:
+            gmx = "gmx"
+        else:
+            raise Exception("gmx not found")
+        
+        pwd = os.getcwd()
+        os.chdir(wdir)
+        run_command([gmx, "editconf", "-f", "MOL.gro", "-o", "newbox.gro", "-c", "-d", str(1.2), "-bt", "dodecahedron"])
+        run_command([gmx, "solvate", "-cp", "newbox.gro", "-cs", "spc216.gro", "-o", "solv.gro", "-p", "topol.top"])
+        os.chdir(pwd)
     else:
-        raise Exception("gmx not found")
-    
-    pwd = os.getcwd()
-    os.chdir(wdir)
-    run_command([gmx, "editconf", "-f", "MOL.gro", "-o", "newbox.gro", "-c", "-d", str(1.2), "-bt", "dodecahedron"])
-    run_command([gmx, "solvate", "-cp", "newbox.gro", "-cs", "spc216.gro", "-o", "solv.gro", "-p", "topol.top"])
-    os.chdir(pwd)
+        shutil.copyfile(gro, wdir / "solv.gro")
+        shutil.copyfile(top, wdir / 'processed.top')
 
     for stage in stages:
         mdp = MDP(Path(__file__).parent / f"{stage}.mdp")
@@ -120,17 +163,24 @@ def setup(wdir: os.PathLike, top: os.PathLike, gro: os.PathLike, config: os.Path
             stage_dir.mkdir(exist_ok=True, parents=True)
             mdp.write(stage_dir / f'{stage}.mdp')
             if i == 0:
-                run_command([
-                    gmx, "grompp", 
-                    "-c", str(wdir / "solv.gro"), 
-                    "-f", str(stage_dir / f'{stage}.mdp'), 
-                    '-p', str(wdir / 'topol.top'), 
-                    '-r', str(wdir / 'solv.gro'),
-                    '-pp', str(stage_dir / 'processed.top'), 
-                    '-maxwarn', 10
-                ])
+                if not processed:
+                    run_command([
+                        gmx, "grompp", 
+                        "-c", str(wdir / "solv.gro"), 
+                        "-f", str(stage_dir / f'{stage}.mdp'), 
+                        '-p', str(wdir / 'topol.top'), 
+                        '-r', str(wdir / 'solv.gro'),
+                        '-pp', str(stage_dir / 'processed.top'), 
+                        '-maxwarn', 10
+                    ])
+                else:
+                    if stage == "nvt" or stage == 'npt':
+                        add_posre(wdir / 'processed.top', stage_dir / 'processed.top')
+                    else:
+                        remove_posre(wdir / 'processed.top', stage_dir / 'processed.top')
             else:
                 shutil.copyfile(wdir / f'lambda0/{stage}/processed.top', stage_dir / 'processed.top')    
+            
             if stage == "em":
                 shutil.copyfile(wdir / "solv.gro", stage_dir / "solv.gro")
     
