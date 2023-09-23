@@ -13,12 +13,6 @@ cd nvt
 $gmx grompp -f nvt.mdp -c ../em/em.gro -p processed.top -r ../em/em.gro -o nvt.tpr -maxwarn 10
 $gmx mdrun -deffnm nvt
 if [ $? -ne 0 ]; then
-  $gmx mdrun -deffnm nvt
-fi
-if [ $? -ne 0 ]; then
-  $gmx mdrun -deffnm nvt
-fi
-if [ $? -ne 0 ]; then
   echo "NVT Failed";
   exit 1
 fi
@@ -28,12 +22,6 @@ cd npt
 $gmx grompp -f npt.mdp -c ../nvt/nvt.gro -t ../nvt/nvt.cpt -p processed.top -r ../nvt/nvt.gro -o npt.tpr -maxwarn 10
 $gmx mdrun -deffnm npt
 if [ $? -ne 0 ]; then
-  $gmx mdrun -deffnm npt
-fi
-if [ $? -ne 0 ]; then
-  $gmx mdrun -deffnm npt
-fi
-if [ $? -ne 0 ]; then
   echo "NPT Failed";
   exit 1
 fi
@@ -42,12 +30,6 @@ cd ../
 cd prod
 $gmx grompp -f prod.mdp -c ../npt/npt.gro -t ../npt/npt.cpt -p processed.top -r ../npt/npt.gro -o prod.tpr -maxwarn 10
 $gmx mdrun -deffnm prod
-if [ $? -ne 0 ]; then
-  $gmx mdrun -deffnm prod
-fi
-if [ $? -ne 0 ]; then
-  $gmx mdrun -deffnm prod
-fi
 if [ $? -ne 0 ]; then
   echo "Production Failed";
   exit 1

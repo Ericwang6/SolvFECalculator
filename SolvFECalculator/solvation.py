@@ -101,7 +101,7 @@ def run_command(cmd: List[str], **kwargs):
     return return_code, out, err
 
 
-def setup(wdir: os.PathLike, top: os.PathLike, gro: os.PathLike, config: os.PathLike, processed: bool = False):
+def setup(wdir: os.PathLike, top: os.PathLike, gro: os.PathLike, config: os.PathLike, processed: bool = False, posre: bool = False):
     from gromacs.fileformats.mdp import MDP
 
     with open(config, 'r') as f:
@@ -174,10 +174,11 @@ def setup(wdir: os.PathLike, top: os.PathLike, gro: os.PathLike, config: os.Path
                         '-maxwarn', 10
                     ])
                 else:
-                    if stage == "nvt" or stage == 'npt':
-                        add_posre(wdir / 'processed.top', stage_dir / 'processed.top')
-                    else:
-                        remove_posre(wdir / 'processed.top', stage_dir / 'processed.top')
+                    shutil.copyfile(wdir / 'processed.top', stage_dir / 'processed.top')
+                if not posre:
+                    if stage == "nvt" or stage == "npt":
+                        remove_posre(stage_dir / 'processed.top', stage_dir / 'tmp.top')
+                        shutil.move(stage_dir / 'tmp.top', stage_dir / 'processed.top')
             else:
                 shutil.copyfile(wdir / f'lambda0/{stage}/processed.top', stage_dir / 'processed.top')    
             
