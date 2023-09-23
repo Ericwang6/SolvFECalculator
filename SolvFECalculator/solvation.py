@@ -193,6 +193,15 @@ def run_md(wdir: os.PathLike, config: os.PathLike, exit_on_submit: bool = True):
     with open(config, 'r') as f:
         jdata = json.load(f)
     
+    trr = jdata['mdp']['prod'].get("nstxout", 0)
+    xtc = jdata['mdp']['prod'].get('nstxout-compressed', 0)
+    if trr:
+        suffix = "trr"
+    elif xtc:
+        suffix = "xtc"
+    else:
+        raise Exception("Either nstxout or nstxout-compreesed has to be specified")
+    
     machine = Machine.load_from_dict(jdata['machine'])
     resources = Resources.load_from_dict(jdata['resources'])
     num_lambdas = len(list(Path(wdir).glob("lambda*")))
@@ -210,7 +219,7 @@ def run_md(wdir: os.PathLike, config: os.PathLike, exit_on_submit: bool = True):
             backward_files=[
                 "script.sh", "err", "log",
                 "em/em.log", "nvt/nvt.log", "npt/npt.log", "prod/prod.log",
-                "em/em.gro", "nvt/nvt.gro", "npt/npt.gro", "prod/prod.gro", "prod/prod.xtc", "prod/prod.xvg"
+                "em/em.gro", "nvt/nvt.gro", "npt/npt.gro", "prod/prod.gro", f"prod/prod.{suffix}", "prod/prod.xvg"
             ]
         )
         task_list.append(task)
