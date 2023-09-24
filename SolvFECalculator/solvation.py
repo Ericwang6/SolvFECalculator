@@ -139,7 +139,7 @@ def setup(wdir: os.PathLike, top: os.PathLike, gro: os.PathLike, config: os.Path
         
         pwd = os.getcwd()
         os.chdir(wdir)
-        run_command([gmx, "editconf", "-f", "MOL.gro", "-o", "newbox.gro", "-c", "-d", str(1.2), "-bt", "dodecahedron"])
+        run_command([gmx, "editconf", "-f", "MOL.gro", "-o", "newbox.gro", "-c", "-d", str(1.2), "-bt", "cubic"])
         run_command([gmx, "solvate", "-cp", "newbox.gro", "-cs", "spc216.gro", "-o", "solv.gro", "-p", "topol.top"])
         os.chdir(pwd)
     else:
@@ -230,7 +230,7 @@ def run_md(wdir: os.PathLike, config: os.PathLike, exit_on_submit: bool = True):
     return res
 
 
-def analysis(wdir: os.PathLike):
+def analysis(wdir: os.PathLike, detail: bool = True):
     import alchemlyb
     from alchemlyb.parsing.gmx import extract_u_nk
     from alchemlyb.visualisation import plot_convergence, plot_mbar_overlap_matrix
@@ -252,23 +252,24 @@ def analysis(wdir: os.PathLike):
     mbarEstimator.fit(alchemlyb.concat(u_nks))
     dG = mbarEstimator.delta_f_.iloc[-1, 0] * kBT
     dG_std = mbarEstimator.d_delta_f_.iloc[-1, 0] * kBT
+    if detail:
     # convergence analysis
-    conv_df = forward_backward_convergence(u_nks, "mbar")
-    for key in ['Forward', 'Forward_Error', 'Backward', 'Backward_Error']:
-        conv_df[key] *= kBT
-    conv_df.to_csv(wdir / "convergence.csv", index=None)
-    conv_ax = plot_convergence(conv_df)
-    conv_ax.set_ylabel("$\Delta G$ (kcal/mol)")
-    conv_ax.set_title(f"Convergence Analysis")
-    conv_ax.figure.savefig(str(wdir / "convergence.png"), dpi=300)
-    # overlap matrix
-    overlap_ax = plot_mbar_overlap_matrix(mbarEstimator.overlap_matrix)
-    overlap_ax.figure.savefig(str(wdir / "overlap.png"), dpi=300)
+        conv_df = forward_backward_convergence(u_nks, "mbar")
+        for key in ['Forward', 'Forward_Error', 'Backward', 'Backward_Error']:
+            conv_df[key] *= kBT
+        conv_df.to_csv(wdir / "convergence.csv", index=None)
+        conv_ax = plot_convergence(conv_df)
+        conv_ax.set_ylabel("$\Delta G$ (kcal/mol)")
+        conv_ax.set_title(f"Convergence Analysis")
+        conv_ax.figure.savefig(str(wdir / "convergence.png"), dpi=300)
+        # overlap matrix
+        overlap_ax = plot_mbar_overlap_matrix(mbarEstimator.overlap_matrix)
+        overlap_ax.figure.savefig(str(wdir / "overlap.png"), dpi=300)
 
     res = {"dG": dG, "dG_std": dG_std}
     with open(wdir / 'result.json', 'w') as f:
         json.dump(res, f)
-    return dG, dG_std
+    return dG, dG_std                                                          
 
 
 if __name__ == "__main__":
