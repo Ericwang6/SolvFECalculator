@@ -6,7 +6,7 @@ fi
 
 cd em
 $gmx grompp -f em.mdp -c solv.gro -p processed.top -o em.tpr -maxwarn 10
-$gmx mdrun -deffnm em
+$gmx mdrun -deffnm em -v
 cd ../
 
 cd nvt
